@@ -1,0 +1,1072 @@
+<!DOCTYPE html><!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+  <title>Reflective Mind Studio · Psychology content</title>
+  <!-- Font Awesome Icons (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      transition: background-color 0.3s ease, border-color 0.2s, color 0.2s;
+    }
+
+    /* variables – dark mode default */
+    :root {
+      --bg: #0b0f1a;
+      --bg-soft: #141b2b;
+      --surface: #1e2740;
+      --text-primary: #eaeef5;
+      --text-secondary: #b0c0d0;
+      --accent-1: #7d8fb3;
+      --accent-2: #a48bb3;
+      --glow: rgba(150, 130, 200, 0.5);
+      --card-bg: #1f2a3f;
+      --border-glow: #2e3b55;
+      --nav-bg: rgba(10, 15, 28, 0.85);
+      --particle-color: rgba(180, 170, 220, 0.2);
+    }
+
+    body.light {
+      --bg: #f0f2f8;
+      --bg-soft: #e2e6f0;
+      --surface: #ffffff;
+      --text-primary: #16202e;
+      --text-secondary: #2c3a57;
+      --accent-1: #4c6190;
+      --accent-2: #7b5e8b;
+      --glow: rgba(100, 90, 180, 0.3);
+      --card-bg: #ffffff;
+      --border-glow: #b7c2da;
+      --nav-bg: rgba(235, 240, 250, 0.8);
+      --particle-color: rgba(80, 70, 150, 0.1);
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      scroll-behavior: smooth;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* animated particle background (soft moving gradient + dots) */
+    #particle-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+      background: radial-gradient(circle at 30% 40%, #1c2640, var(--bg) 80%);
+    }
+
+    body.light #particle-canvas {
+      background: radial-gradient(circle at 30% 40%, #d9e0f0, #eef2f9 80%);
+    }
+
+    /* floating shapes overlay */
+    .bg-float {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .bg-float span {
+      position: absolute;
+      width: 20rem;
+      height: 20rem;
+      background: var(--particle-color);
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: float 25s infinite alternate ease-in-out;
+    }
+
+    .bg-float span:nth-child(1) { top: 5%; left: 2%; width: 28rem; height: 28rem; animation-duration: 30s; }
+    .bg-float span:nth-child(2) { bottom: 0; right: 0; width: 35rem; height: 35rem; animation-duration: 40s; background: rgba(140, 120, 200, 0.1); }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-5%, -8%) scale(1.1); }
+    }
+
+    /* sticky nav */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-glow);
+      padding: 0.7rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      transition: 0.2s;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-scroll {
+      width: 38px;
+      height: 38px;
+      /* === YOUR LOGO IMAGE === */
+      background: url('images/logo.png') no-repeat center/contain;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    body.scrolled .logo-scroll {
+      opacity: 1;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      font-weight: 500;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 1rem;
+      padding: 0.4rem 0;
+      border-bottom: 2px solid transparent;
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover { border-bottom-color: var(--accent-2); color: var(--accent-2); }
+
+    .dark-toggle {
+      background: var(--surface);
+      border: none;
+      border-radius: 40px;
+      padding: 5px 12px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: var(--text-primary);
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--glow);
+    }
+
+    /* main container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* sections */
+    section {
+      margin-bottom: 5rem;
+      scroll-margin-top: 5rem;
+    }
+
+    /* hero */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .profile-img {
+      width: 150px;
+      height: 150px;
+      /* === YOUR PROFILE PICTURE === */
+      background: url('images/profile 22.jpg') center/cover;
+      border-radius: 50%;
+      border: 4px solid var(--accent-1);
+      box-shadow: 0 0 40px var(--glow);
+      margin-bottom: 1.5rem;
+    }
+
+    h1 { font-size: 2.5rem; background: linear-gradient(145deg, #c0b7e0, #a6c0e0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subhead { font-size: 1.3rem; color: var(--accent-1); margin-bottom: 1rem; }
+    .location { color: var(--text-secondary); margin-bottom: 0.8rem; }
+    .languages { margin-bottom: 1.5rem; font-style: italic; }
+
+    .intro-text {
+      max-width: 850px;
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 28px;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 15px 30px -10px rgba(0,0,0,0.5);
+      border: 1px solid var(--border-glow);
+      margin: 2rem 0 1rem;
+    }
+
+    .scroll-down {
+      margin-top: 2rem;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce { 0%,20%,50%,80%,100%{transform:translateY(0);} 40%{transform:translateY(-15px);} 60%{transform:translateY(-8px);} }
+
+    /* whatsapp fixed */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 25px;
+      right: 25px;
+      background: #25d366;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 2rem;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+      z-index: 99;
+      transition: 0.2s;
+      animation: pulse-green 2s infinite;
+    }
+    @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { box-shadow: 0 0 0 14px rgba(37,211,102,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
+
+    /* back to top */
+    #backToTop {
+      position: fixed;
+      bottom: 100px;
+      right: 25px;
+      background: var(--accent-2);
+      width: 50px;
+      height: 50px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.8rem;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+      z-index: 98;
+      border: none;
+    }
+    #backToTop.show { opacity: 1; pointer-events: all; }
+
+    /* blog cards */
+    .blog-grid, .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border-glow);
+      box-shadow: 0 10px 20px -5px rgba(0,0,0,0.4);
+      transition: 0.3s ease;
+      position: relative;
+    }
+    .card:hover { transform: scale(1.02); box-shadow: 0 0 28px var(--glow); border-color: var(--accent-1); }
+
+    .card-img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      background-size: cover;
+      background-position: center;
+    }
+    .card-content { padding: 1.5rem; }
+    .btn {
+      background: transparent;
+      border: 1px solid var(--accent-1);
+      color: var(--accent-1);
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      margin-top: 1rem;
+      display: inline-block;
+      cursor: pointer;
+      transition: 0.2s;
+      text-decoration: none;
+    }
+    .btn:hover { background: var(--accent-1); color: #0b0f1a; box-shadow: 0 0 15px currentColor; }
+
+    /* pricing accordion */
+    .accordion-item {
+      background: var(--surface);
+      margin: 0.7rem 0;
+      border-radius: 20px;
+      border: 1px solid var(--border-glow);
+    }
+    .accordion-title {
+      padding: 1.2rem 2rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.2s;
+      background: var(--bg-soft);
+      border-radius: 0 0 20px 20px;
+      padding: 0 2rem;
+    }
+    .accordion-item.open .accordion-content {
+      max-height: 400px;
+      padding: 1.2rem 2rem;
+    }
+    .pricing-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px dashed var(--border-glow); }
+
+    /* contact form */
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      max-width: 600px;
+      background: var(--surface);
+      padding: 2.5rem;
+      border-radius: 32px;
+    }
+    .contact-form input, .contact-form textarea {
+      background: var(--bg-soft);
+      border: 1px solid var(--border-glow);
+      padding: 1rem;
+      border-radius: 40px;
+      color: var(--text-primary);
+    }
+    .submit-btn {
+      background: var(--accent-2);
+      border: none;
+      padding: 1rem;
+      border-radius: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .submit-btn:hover { filter: brightness(1.2); transform: scale(1.02); }
+
+    /* footer */
+    .footer { text-align: center; padding: 2rem; border-top: 1px solid var(--border-glow); margin-top: 3rem; }
+
+    /* responsive */
+    @media (max-width: 700px) {
+      nav { flex-direction: column; gap: 0.7rem; }
+      .nav-links { gap: 1rem; justify-content: center; }
+    }
+    /* article dummy pages */
+    .article-page { background: var(--surface); padding: 2rem; border-radius: 40px; max-width: 800px; margin: 2rem auto; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <canvas id="particle-canvas"></canvas>
+  <div class="bg-float"><span></span><span></span></div>
+
+  <!-- Sticky nav with logo (top-left) -->
+  <nav id="navbar">
+    <div class="nav-logo">
+      <span class="logo-scroll"></span>
+      <span style="font-weight: 600; letter-spacing: 1px;">REFLECTIVE MIND STUDIO</span>
+    </div>
+    <div class="nav-links">
+      <a href="#home">Home</a>
+      <a href="#about">About</a>
+      <a href="#blog">Blog</a>
+      <a href="#services">Services</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#contact">Contact</a>
+    </div>
+    <button class="dark-toggle" id="themeToggle"><i class="fas fa-moon"></i> / <i class="fas fa-sun"></i></button>
+  </nav>
+
+  <!-- whatsapp fixed -->
+  <a href="https://whatsapp.com/dl/" target="_blank" class="whatsapp-float" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+  <!-- back to top -->
+  <div id="backToTop"><i class="fas fa-arrow-up"></i></div>
+
+  <main class="container">
+    <!-- HOME SECTION -->
+    <section id="home">
+      <div class="hero">
+        <div class="profile-img" title="profile.png"></div>
+        <h1>Sachini Nadeesha</h1>
+        <div class="subhead">Psychology Content Writer · Mental Health Blogger</div>
+        <div class="location"><i class="fas fa-map-marker-alt"></i> Matara, Southern Province, Sri Lanka</div>
+        <div class="languages"><i class="fas fa-globe"></i> Sinhala | English | Japanese</div>
+        <div class="intro-text">
+          <p>At Reflective Mind Studio, writing is approached as both an intellectual craft and a psychological inquiry. I specialize in research-informed psychology content that translates complex theories into clear, engaging, and accessible language. My work bridges academic understanding with practical insight, making psychological knowledge meaningful for modern readers.</p><br>
+          <p>With a focused interest in mental health, emotional development, and cognitive processes, I create structured, evidence-based content tailored for educational platforms, blogs, and professional websites. Every piece is developed with academic integrity, clarity of thought, and respect for psychological accuracy.</p><br>
+          <p><strong>Reflective Mind Studio is built on one principle: thoughtful writing shapes informed minds.</strong></p>
+        </div>
+        <div class="scroll-down"><i class="fas fa-chevron-down fa-2x" style="color:var(--accent-1);"></i></div>
+      </div>
+    </section>
+
+    <!-- ABOUT PAGE -->
+    <section id="about">
+      <h2 style="font-size: 2rem; margin-bottom:1.5rem;"><i class="fas fa-user-astronaut" style="color:var(--accent-2);"></i> About</h2>
+      <div style="background: var(--surface); border-radius: 28px; padding: 2rem;">
+        <p>I am currently pursuing a <strong>BSc (Hons) in Psychology</strong> at The Open University of Sri Lanka. Alongside my degree, I am completing a <strong>Diploma in Counselling (In Progress)</strong> at Oxford Lanka Campus (Pvt) Ltd.</p><br>
+        <p><strong>Academic interests include:</strong> Mental Health · Emotional Development · Cognitive Processes · Social & Developmental Psychology · Psychological Research & Writing</p><br>
+        <p><em>Position as: Psychology Content Writer, Research-Oriented Writer, Ethical & Evidence-Based Approach.</em></p>
+      </div>
+    </section>
+
+    <!-- BLOG SECTION with 5 cards (images from your folder) -->
+    <section id="blog">
+      <h2 style="font-size: 2rem;">Latest reflections</h2>
+      <div class="blog-grid" id="blogGrid"></div>
+    </section>
+
+    <!-- hidden article viewer -->
+    <div id="articleViewer" class="article-page hidden"></div>
+
+    <!-- SERVICES -->
+    <section id="services">
+      <h2>Services</h2>
+      <div class="services-grid" id="servicesList"></div>
+    </section>
+
+    <!-- PRICING accordion -->
+    <section id="pricing">
+      <h2>Pricing</h2>
+      <div id="pricingAccordion"></div>
+    </section>
+
+    <!-- CONTACT -->
+    <section id="contact">
+      <h2>Let’s connect</h2>
+      <div style="display: flex; flex-wrap: wrap; gap: 2rem;">
+        <form class="contact-form" id="contactForm">
+          <input type="text" placeholder="Your name" required>
+          <input type="email" placeholder="Email address" required>
+          <textarea rows="4" placeholder="Your message..."></textarea>
+          <button class="submit-btn" type="submit"><i class="fas fa-paper-plane"></i> Send message</button>
+        </form>
+        <div style="min-width:160px;">
+          <div style="display: flex; gap: 1.8rem; font-size: 2.5rem; margin-top: 2rem;">
+            <a href="https://www.linkedin.com/in/sachini-nadeesha-66a710397?utm_source=share_via&utm_content=profile&utm_medium=member_android" target="_blank" rel="noopener noreferrer" style="text-decoration: none;">
+  <i class="fab fa-linkedin" style="color:var(--accent-1);"></i>
+</a>
+            <i class="fab fa-twitter" style="color:var(--accent-1);"></i>
+            <i class="fab fa-instagram" style="color:var(--accent-1);"></i>
+          </div>
+        </div>
+      </div>
+    </section>
+    <footer class="footer">
+      © 2025 Reflective Mind Studio — Psychology content with care
+    </footer>
+  </main>
+
+  <script>
+    (function() {
+      // dark/light toggle
+      const toggle = document.getElementById('themeToggle');
+      toggle.addEventListener('click', () => {
+        document.body.classList.toggle('light');
+      });
+
+      // sticky nav logo
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 70) document.body.classList.add('scrolled');
+        else document.body.classList.remove('scrolled');
+      });
+
+      // back to top button
+      const backBtn = document.getElementById('backToTop');
+      window.addEventListener('scroll', ()=> {
+        if (window.scrollY > 500) backBtn.classList.add('show');
+        else backBtn.classList.remove('show');
+      });
+      backBtn.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
+
+      // smooth scroll for nav links
+      document.querySelectorAll('.nav-links a').forEach(link => {
+        link.addEventListener('click', (e) => {
+          e.preventDefault();
+          const id = link.getAttribute('href').substring(1);
+          document.getElementById(id).scrollIntoView({behavior:'smooth'});
+        });
+      });
+
+      // blog articles data – replace the image filenames with your own
+      const articles = [
+        {
+        
+    title: 'Foundations of Psychology: Understanding Human Behavior', 
+    desc: 'Based on Introduction to Psychology – explore the roots of mind and behavior.',
+    imgUrl: 'images/Introduction-to-psychology.jpg',
+    pdfFile: 'images/pdfs/Introduction-to-psychology.pdf',
+    content: `<h3>Introduction</h3><p>Your article content here...</p>`
+}
+        ,
+        { 
+           title: 'Motivation and Emotion: The Driving Forces of Human Behavior', 
+    desc: 'How emotions steer actions, and what motivates us daily.',
+    imgUrl: 'images/Motivation-and-emotion.jpg',
+    pdfFile: 'images/pdfs/Motivation-and-emotion.pdf',
+    content: `<h3>Introduction</h3><p>Your article content here...</p>`
+        },
+        { 
+          title: 'The Mental Well-being of Sri Lankans: Social and Psychological Perspectives', 
+    desc: 'Cultural insights, challenges, and resilience in Sri Lanka.',
+    imgUrl: 'images/Mental-wellbeing-of-Sri-Lankans.jpg',
+    pdfFile: 'images/pdfs/Mental-wellbeing-of-Sri-Lankans.pdf',
+    content: `<h3>Introduction</h3><p>Your article content here...</p>`
+        },
+        { 
+          title: 'Early Adulthood: Social Development and Modern Psychological Challenges', 
+    desc: 'Developmental tasks, relationships, and mental health in early adulthood.',
+    imgUrl: 'images/Early-Adulthood.jpg',
+    pdfFile: 'images/pdfs/Early-Adulthood.pdf',
+    content: `<h3>Introduction</h3><p>Your article content here...</p>`
+        },
+        { 
+          title: 'Understanding Motivation and Emotion in Everyday Life', 
+    desc: 'A newspaper-style reflection on daily drives and feelings.',
+    imgUrl: 'images/Motivation-and-emotion-in-daily-life.jpg',
+    pdfFile: 'images/pdfs/Motivation-emotion-in-daily-life.pdf',
+    content: `<h3>Introduction</h3><p>Your article content here...</p>`
+        }
+      ];
+
+      function renderBlog() {
+        const grid = document.getElementById('blogGrid');
+        grid.innerHTML = articles.map((a,i) => `
+          <div class="card" data-index="${i}">
+            <div class="card-img" style="background-image: url('${a.imgUrl}');"></div>
+            <div class="card-content">
+              <h3>${a.title}</h3>
+              <p>${a.desc.substring(0,70)}…</p>
+              <button class="btn readFullBtn" data-id="${i}">Read Full Article <i class="fas fa-bolt" style="color:gold;"></i></button>
+            </div>
+          </div>
+        `).join('');
+      }
+      renderBlog();
+
+      // show full article in viewer
+      const viewer = document.getElementById('articleViewer');
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('readFullBtn') || e.target.closest('.readFullBtn')) {
+          const btn = e.target.closest('.readFullBtn');
+          const idx = btn.dataset.id;
+          const art = articles[idx];
+          viewer.classList.remove('hidden');
+          viewer.innerHTML = `
+             <h2>${art.title}</h2>
+  <p><strong>Author:</strong> Sachini Nadeesha</p>
+  <hr>
+  <p>Your article is available as a PDF. Click the button below to open it.</p>
+  <p style="margin-top:2rem;">
+    <a href="${art.pdfFile}" target="_blank" class="btn" style="background: var(--accent-1); color: white; font-size: 1.2rem;">
+      <i class="fas fa-file-pdf"></i> Open Article (PDF)
+    </a>
+  </p>
+  <p style="color:var(--accent-1);">Disclaimer: for educational use only.</p>
+  <button class="btn" id="closeArticle">← back to blog</button>
+          `;
+          viewer.scrollIntoView({behavior:'smooth'});
+          document.getElementById('closeArticle')?.addEventListener('click', ()=> viewer.classList.add('hidden'));
+        }
+      });
+
+      // services cards
+      const services = [
+        { icon:'fa-pen-fancy', name:'Psychology Blog Writing', desc:'Engaging blog posts that translate psychology for broad audiences.' },
+        { icon:'fa-flask', name:'Research-Based Articles', desc:'Literature‑informed content with academic rigor.' },
+        { icon:'fa-scroll', name:'Academic Content Writing', desc:'Structured essays, study notes & educational material.' },
+        { icon:'fa-heart', name:'Mental Health Awareness Content', desc:'Sensitive, stigma‑free writing for mental health.' },
+        { icon:'fa-envelope-open-text', name:'Psychology Newsletter Writing', desc:'Curated psychology insights for your readers.' },
+        { icon:'fa-pencil-ruler', name:'Content Editing & Proofreading', desc:'Refine tone, clarity and psychological accuracy.' }
+      ];
+      document.getElementById('servicesList').innerHTML = services.map(s => `
+        <div class="card">
+          <div class="card-content" style="text-align:center;">
+            <i class="fas ${s.icon} fa-3x" style="color:var(--accent-2); margin-bottom:0.8rem;"></i>
+            <h3>${s.name}</h3>
+            <p>${s.desc}</p>
+            <button class="btn hireBtn">Hire Now <i class="fas fa-arrow-right"></i></button>
+          </div>
+        </div>
+      `).join('');
+
+      // pricing accordion
+      const pricingData = {
+        'Writing Articles': ['Short Blog Post (500–700 words) – $10–$20','Standard Article (800–1000 words) – $20–$40','Long Article (1200–1500 words) – $40–$60','SEO-Optimized Article (800–1200 words) – $40–$80'],
+        'Other Writing Services': ['Social Media Captions – $5–$15','Psychology Newsletter – $15–$40','Proofreading & Editing – $10–$30','Topic & Outline Creation – $5–$15']
+      };
+      const accordionDiv = document.getElementById('pricingAccordion');
+      accordionDiv.innerHTML = Object.entries(pricingData).map(([cat, items], index) => `
+        <div class="accordion-item" data-cat="${cat}">
+          <div class="accordion-title">${cat} <i class="fas fa-chevron-down"></i></div>
+          <div class="accordion-content">${items.map(i => `<div class="pricing-row"><span>${i.split('–')[0]}</span><span>– ${i.split('–')[1]}</span></div>`).join('')}</div>
+        </div>
+      `).join('');
+
+      document.querySelectorAll('.accordion-title').forEach(title => {
+        title.addEventListener('click', function(e) {
+          const parent = this.parentElement;
+          const isOpen = parent.classList.contains('open');
+          document.querySelectorAll('.accordion-item').forEach(item => item.classList.remove('open'));
+          if (!isOpen) parent.classList.add('open');
+        });
+      });
+
+      // fake form alert
+      document.getElementById('contactForm').addEventListener('submit', (e) => {
+        e.preventDefault();
+        alert('📬 Thanks for reaching out. (Demo – your message would be sent.)');
+      });
+
+      // hire now dummy alert
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('hireBtn')) alert('✨ Inquiry received. I’ll get back soon. (demo)');
+      });
+
+      // particle animation
+      const canvas = document.getElementById('particle-canvas');
+      let ctx = canvas.getContext('2d');
+      function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+      window.addEventListener('resize', resizeCanvas); resizeCanvas();
+      let particles = [];
+      for (let i=0; i<40; i++) particles.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, r:Math.random()*3+1, dx:(Math.random()-0.5)*0.2, dy:(Math.random()-0.5)*0.2});
+
+      function animateParticles() {
+        if (!ctx) return;
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = document.body.classList.contains('light') ? '#7f8fa050' : '#b8b0d530';
+        particles.forEach(p => {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+          ctx.fill();
+          p.x += p.dx; p.y += p.dy;
+          if (p.x<0||p.x>canvas.width) p.dx*=-1;
+          if (p.y<0||p.y>canvas.height) p.dy*=-1;
+        });
+        requestAnimationFrame(animateParticles);
+      }
+      animateParticles();
+    })();
+  </script>
+  <!-- ensure body class for scrolled logo -->
+  <style>body.scrolled .logo-scroll { opacity: 1; }</style>
+</body>
+</html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5">
+  <title>Reflective Mind Studio · Psychology content</title>
+  <!-- Font Awesome Icons (free) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      transition: background-color 0.3s ease, border-color 0.2s, color 0.2s;
+    }
+
+    /* variables – dark mode default */
+    :root {
+      --bg: #0b0f1a;
+      --bg-soft: #141b2b;
+      --surface: #1e2740;
+      --text-primary: #eaeef5;
+      --text-secondary: #b0c0d0;
+      --accent-1: #7d8fb3;
+      --accent-2: #a48bb3;
+      --glow: rgba(150, 130, 200, 0.5);
+      --card-bg: #1f2a3f;
+      --border-glow: #2e3b55;
+      --nav-bg: rgba(10, 15, 28, 0.85);
+      --particle-color: rgba(180, 170, 220, 0.2);
+    }
+
+    body.light {
+      --bg: #f0f2f8;
+      --bg-soft: #e2e6f0;
+      --surface: #ffffff;
+      --text-primary: #16202e;
+      --text-secondary: #2c3a57;
+      --accent-1: #4c6190;
+      --accent-2: #7b5e8b;
+      --glow: rgba(100, 90, 180, 0.3);
+      --card-bg: #ffffff;
+      --border-glow: #b7c2da;
+      --nav-bg: rgba(235, 240, 250, 0.8);
+      --particle-color: rgba(80, 70, 150, 0.1);
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text-primary);
+      line-height: 1.6;
+      scroll-behavior: smooth;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* animated particle background (soft moving gradient + dots) */
+    #particle-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -2;
+      pointer-events: none;
+      background: radial-gradient(circle at 30% 40%, #1c2640, var(--bg) 80%);
+    }
+
+    body.light #particle-canvas {
+      background: radial-gradient(circle at 30% 40%, #d9e0f0, #eef2f9 80%);
+    }
+
+    /* floating shapes overlay */
+    .bg-float {
+      position: fixed;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    .bg-float span {
+      position: absolute;
+      width: 20rem;
+      height: 20rem;
+      background: var(--particle-color);
+      border-radius: 50%;
+      filter: blur(80px);
+      animation: float 25s infinite alternate ease-in-out;
+    }
+
+    .bg-float span:nth-child(1) { top: 5%; left: 2%; width: 28rem; height: 28rem; animation-duration: 30s; }
+    .bg-float span:nth-child(2) { bottom: 0; right: 0; width: 35rem; height: 35rem; animation-duration: 40s; background: rgba(140, 120, 200, 0.1); }
+
+    @keyframes float {
+      0% { transform: translate(0, 0) scale(1); }
+      100% { transform: translate(-5%, -8%) scale(1.1); }
+    }
+
+    /* sticky nav */
+    nav {
+     
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border-glow);
+      padding: 0.7rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      transition: 0.2s;
+    }
+
+    .nav-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .logo-scroll {
+  .logo-scroll {
+ width: 38px;
+  height: 38px;
+  background: url('images/logo.png') no-repeat center/contain;
+  opacity: 1;               /* ← now always visible */
+  transition: opacity 0.2s;
+  background: url('images/your-actual-filename.jpg') no-repeat center/contain;
+}
+
+/* This rule shows the logo only after scrolling */
+body.scrolled .logo-scroll {
+  opacity: 1;
+}
+
+/* Remove or comment out this block – it's no longer needed */
+/* body.scrolled .logo-scroll {
+  opacity: 1;
+} */
+      width: 38px;
+      height: 38px;
+      /* === YOUR LOGO IMAGE === */
+      background: url('images/logo.png') no-repeat center/contain;
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+
+    body.scrolled .logo-scroll {
+      opacity: 1;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      font-weight: 500;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      color: var(--text-primary);
+      text-decoration: none;
+      font-size: 1rem;
+      padding: 0.4rem 0;
+      border-bottom: 2px solid transparent;
+      transition: 0.2s;
+    }
+
+    .nav-links a:hover { border-bottom-color: var(--accent-2); color: var(--accent-2); }
+
+    .dark-toggle {
+      background: var(--surface);
+      border: none;
+      border-radius: 40px;
+      padding: 5px 12px;
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      color: var(--text-primary);
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--glow);
+    }
+
+    /* main container */
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem;
+    }
+
+    /* sections */
+    section {
+      margin-bottom: 5rem;
+      scroll-margin-top: 5rem;
+    }
+
+    /* hero */
+    .hero {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+
+    .profile-img {
+      width: 150px;
+      height: 150px;
+      /* === YOUR PROFILE PICTURE === */
+      background: url('images/profile 22.jpg') center/cover;
+      border-radius: 50%;
+      border: 4px solid var(--accent-1);
+      box-shadow: 0 0 40px var(--glow);
+      margin-bottom: 1.5rem;
+    }
+
+    h1 { font-size: 2.5rem; background: linear-gradient(145deg, #c0b7e0, #a6c0e0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .subhead { font-size: 1.3rem; color: var(--accent-1); margin-bottom: 1rem; }
+    .location { color: var(--text-secondary); margin-bottom: 0.8rem; }
+    .languages { margin-bottom: 1.5rem; font-style: italic; }
+
+    .intro-text {
+      max-width: 850px;
+      background: var(--surface);
+      padding: 2rem;
+      border-radius: 28px;
+      backdrop-filter: blur(4px);
+      box-shadow: 0 15px 30px -10px rgba(0,0,0,0.5);
+      border: 1px solid var(--border-glow);
+      margin: 2rem 0 1rem;
+    }
+
+    .scroll-down {
+      margin-top: 2rem;
+      animation: bounce 2s infinite;
+    }
+    @keyframes bounce { 0%,20%,50%,80%,100%{transform:translateY(0);} 40%{transform:translateY(-15px);} 60%{transform:translateY(-8px);} }
+
+    /* whatsapp fixed */
+    .whatsapp-float {
+     .whatsapp-float {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: #25d366;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 2rem;
+  box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+  z-index: 99;
+  transition: 0.2s;
+  animation: pulse-green 2s infinite;
+  text-decoration: none; /* ensure no underline */
+}
+    }
+    @keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); } 70% { box-shadow: 0 0 0 14px rgba(37,211,102,0); } 100% { box-shadow: 0 0 0 0 rgba(0,0,0,0); } }
+
+    /* back to top */
+    #backToTop {
+      position: fixed;
+      bottom: 100px;
+      right: 25px;
+      background: var(--accent-2);
+      width: 50px;
+      height: 50px;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 1.8rem;
+      cursor: pointer;
+      opacity: 0;
+      pointer-events: none;
+      transition: 0.3s;
+      z-index: 98;
+      border: none;
+    }
+    #backToTop.show { opacity: 1; pointer-events: all; }
+
+    /* blog cards */
+    .blog-grid, .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      margin: 2rem 0;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 24px;
+      overflow: hidden;
+      border: 1px solid var(--border-glow);
+      box-shadow: 0 10px 20px -5px rgba(0,0,0,0.4);
+      transition: 0.3s ease;
+      position: relative;
+    }
+    .card:hover { transform: scale(1.02); box-shadow: 0 0 28px var(--glow); border-color: var(--accent-1); }
+
+    .card-img {
+      width: 100%;
+      aspect-ratio: 1/1;
+      background-size: cover;
+      background-position: center;
+    }
+    .card-content { padding: 1.5rem; }
+    .btn {
+      background: transparent;
+      border: 1px solid var(--accent-1);
+      color: var(--accent-1);
+      padding: 0.6rem 1.2rem;
+      border-radius: 40px;
+      font-weight: 600;
+      margin-top: 1rem;
+      display: inline-block;
+      cursor: pointer;
+      transition: 0.2s;
+      text-decoration: none;
+    }
+    .btn:hover { background: var(--accent-1); color: #0b0f1a; box-shadow: 0 0 15px currentColor; }
+
+    /* pricing accordion */
+    .accordion-item {
+      background: var(--surface);
+      margin: 0.7rem 0;
+      border-radius: 20px;
+      border: 1px solid var(--border-glow);
+    }
+    .accordion-title {
+      padding: 1.2rem 2rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .accordion-content {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.2s;
+      background: var(--bg-soft);
+      border-radius: 0 0 20px 20px;
+      padding: 0 2rem;
+    }
+    .accordion-item.open .accordion-content {
+      max-height: 400px;
+      padding: 1.2rem 2rem;
+    }
+    .pricing-row { display: flex; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px dashed var(--border-glow); }
+
+    /* contact form */
+    .contact-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      max-width: 600px;
+      background: var(--surface);
+      padding: 2.5rem;
+      border-radius: 32px;
+    }
+    .contact-form input, .contact-form textarea {
+      background: var(--bg-soft);
+      border: 1px solid var(--border-glow);
+      padding: 1rem;
+      border-radius: 40px;
+      color: var(--text-primary);
+    }
+    .submit-btn {
+      background: var(--accent-2);
+      border: none;
+      padding: 1rem;
+      border-radius: 40px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .submit-btn:hover { filter: brightness(1.2); transform: scale(1.02); }
+
+    /* footer */
+    .footer { text-align: center; padding: 2rem; border-top: 1px solid var(--border-glow); margin-top: 3rem; }
+
+    /* responsive */
+    @media (max-width: 700px) {
+      nav { flex-direction: column; gap: 0.7rem; }
+      .nav-links { gap: 1rem; justify-content: center; }
+    }
+    /* article dummy pages */
+    .article-page { background: var(--surface); padding: 2rem; border-radius: 40px; max-width: 800px; margin: 2rem auto; }
+    .hidden { display: none; }
+  </style>
+
+</html>
